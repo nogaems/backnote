@@ -3,6 +3,8 @@
 #include <libconfig.h>
 
 #define MAX_NOTES 8
+#define NUMBER_OF_PATHS 3
+#define MAX_LENGTH_OF_PATH 128
 
 extern struct bn_config conf;
 
@@ -62,6 +64,7 @@ struct bn_config {
     unsigned int notes_count;
 };
 
+char *get_config_name();
 bool check_config_exists(const char *name);
 int load_config(char *name, config_t *cfg, struct bn_config *conf);
 void print_config(char *name);

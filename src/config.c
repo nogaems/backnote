@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include "config.h"
@@ -8,6 +9,26 @@ check_config_exists(const char * name)
 {
     return access(name, R_OK) != -1 ? true : false;
 }
+
+char *
+get_config_name()
+{
+    char *result = malloc(sizeof(char *));
+    memset(result, 0, 0);
+    char possible_path[NUMBER_OF_PATHS][MAX_LENGTH_OF_PATH] =
+    {
+        "./backnote.cfg", "~/.backnote.cfg", "/etc/backnote.cf"
+    };
+    for(int i = 0; i < NUMBER_OF_PATHS; i++)
+    {
+        if(check_config_exists(possible_path[i]))
+        {
+            strcpy(result, possible_path[i]);
+            return result;
+        }
+    }        
+    return result;
+} 
 
 int
 load_config(char *name, config_t *cfg, struct bn_config *conf)
@@ -69,9 +90,10 @@ load_config(char *name, config_t *cfg, struct bn_config *conf)
 void
 print_config(char *name)
 {
+    printf("config file name: \"%s\"\n\n", name);
     printf("wallpaper: %s\n", conf.wallpaper);
-    printf("daemon: %i\n", conf.daemon);   
-    printf("----------\nnotes count: %i\n", conf.notes_count);
+    printf("daemon: %i\n\n", conf.daemon);   
+    printf("notes count: %i\n", conf.notes_count);
     for (int i = 0; i < conf.notes_count; i++)
     {
         printf("note #%i:\n", i);
