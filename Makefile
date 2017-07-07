@@ -1,6 +1,6 @@
 IDIR=./src
 CC=gcc
-CFLAGS=-I$(IDIR) -std=c99 -pedantic -Wall
+CFLAGS=-I$(IDIR) -std=c11 -pedantic -Wall
 ODIR=./src
 LIBS=-lconfig
 
