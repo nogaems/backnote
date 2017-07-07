@@ -2,6 +2,7 @@ IDIR=./src
 CC=gcc
 CFLAGS=-I$(IDIR) -std=c99 -pedantic -Wall
 ODIR=./src
+LIBS=-lconfig
 
 _DEPS = config.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
@@ -19,5 +20,5 @@ backnote: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o 
 
