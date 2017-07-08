@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 #include "config.h"
+#include <X11/Xlib.h>
+#include <X11/Xft/Xft.h>
 
 bool
 check_file_reads(const char * name)
@@ -111,4 +113,97 @@ print_config(char *name)
         printf("border_thickness: %i\n", conf.notes[0].style.border_thickness);
         printf("bg_color: %i\n", conf.notes[0].style.bg_color);
     }
+}
+
+bool
+validate_config(struct bn_config *conf)
+{
+    Display *d;
+    int s;
+    int wpx,hpx;
+    bool result = true;
+    if (!(d = XOpenDisplay(NULL)))
+    {
+        fprintf(stderr, "Cannot open display\n");
+        exit(1);
+    }
+    s = DefaultScreen(d);
+    wpx = XDisplayWidth(d, s);
+    hpx = XDisplayHeight(d, s);
+
+    if(!check_file_reads(conf->wallpaper))
+        FALSE_CHECK_WITH_MESSAGE(conf->wallpaper, "Unable to read the file");
+    if(conf->notes_count == 0)
+        FALSE_CHECK_WITH_MESSAGE("amount of notes", "you should add at least one note");
+    if(conf->notes_count >= MAX_NOTES)
+        FALSE_CHECK_WITH_MESSAGE("amount of notes",
+                                 STR_CONC_INT("too many notes, it should be lesser or equals to ",
+                                              MAX_NOTES));
+    for(int i = 0; i < conf->notes_count; i++)
+    {
+        struct bn_note note = conf->notes[i];        
+
+        if(!check_file_reads(note.file))
+            FALSE_CHECK_WITH_MESSAGE(note.file, "Unable to read the file");
+        
+        if(note.position.x1 > wpx)
+            FALSE_CHECK_WITH_MESSAGE("x1", "This value should be lesser than you display width");
+        if(note.position.y1 > hpx)
+            FALSE_CHECK_WITH_MESSAGE("y1", "This value should be lesser than you display height");
+        if(note.position.x2 < note.position.x1 && note.position.x2 != 0)
+            FALSE_CHECK_WITH_MESSAGE("x2", "This value should be bigger that x1");
+        if(note.position.y2 < note.position.y1 && note.position.y2 != 0)
+            FALSE_CHECK_WITH_MESSAGE("y2", "This value should be bigger that y1");
+
+        FcConfig *config = FcInitLoadConfigAndFonts();
+        FcResult r;
+        /* 
+           Configure the search pattern, 
+           assume "name" is desired font name 
+        */
+        FcPattern* pat = FcNameParse((const FcChar8*)(note.style.font));
+        FcConfigSubstitute(config, pat, FcMatchPattern);
+        FcDefaultSubstitute(pat);
+        /* Find the font */
+        FcPattern* font = FcFontMatch(config, pat, &r);
+        if (font)
+        {
+            FcChar8* file = NULL;
+            if (FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch)
+            {
+                /* 
+                   I don't actually know is this a common behavior
+                   of fontconfig or it's just to me, but we need to
+                   compare the font name that has been found and the
+                   name that was specified in the configuration file.
+                   It's because fontconfig can return some *default*
+                   font if specified font cound not be found (this 
+                   exactly happens to me).
+                */
+                if(strstr((char*)file, note.style.font) == NULL)
+                    FALSE_CHECK_WITH_MESSAGE(note.style.font, "Could not find this font");
+            }
+            FcPatternDestroy(font);
+        }
+        FcPatternDestroy(pat);
+
+        if(note.style.size < MIN_FONT_SIZE || note.style.size > MAX_FONT_SIZE)
+            FALSE_CHECK_WITH_MESSAGE("size",
+                                     STR_CONC_INT("This value should be in range from ",
+                                                  MIN_FONT_SIZE)
+                                     STR_CONC_INT(" to ",
+                                                  MAX_FONT_SIZE));
+        if(note.style.color < 0 || note.style.color > 255)
+            FALSE_CHECK_WITH_MESSAGE("color", "This value should be in range from 0 to 255");
+        if(note.style.border_color < 0 || note.style.border_color > 255)
+            FALSE_CHECK_WITH_MESSAGE("border_color", "This value should be in range from 0 to 255");
+        if(note.style.border_thickness < 0 || note.style.border_thickness > MAX_BORDER_THICKNESS)
+            FALSE_CHECK_WITH_MESSAGE("border_thickness",
+                                     STR_CONC_INT("This value should be in range from 1 to ",
+                                                  MAX_BORDER_THICKNESS));
+        if(note.style.bg_color < -1 || note.style.bg_color > 255)
+            FALSE_CHECK_WITH_MESSAGE("bg_color",
+                                     "This value should be in range from -1 to 255 (-1 is transparent, 0 is black)");
+    }
+    return result;
 }

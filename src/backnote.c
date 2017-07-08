@@ -22,6 +22,8 @@ int main(int argc, char * argv[])
         return 1;
     }
     print_config(name);
+    if(!validate_config(&conf))
+        fprintf(stderr, "Configuration file is not valid\nExiting\n");
     free(name);
     return 0;
 }

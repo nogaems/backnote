@@ -1,8 +1,9 @@
 IDIR=./src
 CC=gcc
-CFLAGS=-I$(IDIR) -std=c11 -pedantic -Wall
+FREETYPEDIR=/usr/include/freetype2/
+CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -std=c11 -pedantic -Wall
 ODIR=./src
-LIBS=-lconfig
+LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig
 
 _DEPS = config.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))

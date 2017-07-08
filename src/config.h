@@ -6,12 +6,18 @@
 #define NUMBER_OF_PATHS 3
 #define MAX_LENGTH_OF_PATH 128
 
+#define MAX_FONT_SIZE 32
+#define MIN_FONT_SIZE 8
+#define MAX_BORDER_THICKNESS 8
+
 extern struct bn_config conf;
 
-/* setting - config_t *, 
-name - char *, 
-destination - pointer, 
-required - 1 or 0 */
+/* 
+   setting - config_t *, 
+   name - char *, 
+   destination - pointer, 
+   required - 1 or 0 
+*/
 #define LOAD_INT(s, n, d, r) \
     if(!config_setting_lookup_int(s, n, d) && r)  \
     { \
@@ -31,8 +37,21 @@ required - 1 or 0 */
         return -1; \
     }
 
-/* Note style */
+/* 
+   Used in validate_config function
+   o - object of validation
+   e - explanation of a problem
+*/
+#define FALSE_CHECK_WITH_MESSAGE(o, e)                              \
+    fprintf(stderr, "[config validation error] %s: %s\n", o, e);    \
+    result = false
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
+#define STR_CONC_INT(s1, s2) s1 STR(s2)
+
+/* Note style */
 struct bn_note_style {
     const char *font;
     int size;
@@ -68,3 +87,4 @@ char *get_config_name();
 bool check_file_reads(const char *name);
 int load_config(char *name, config_t *cfg, struct bn_config *conf);
 void print_config(char *name);
+bool validate_config(struct bn_config *conf);
