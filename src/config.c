@@ -5,7 +5,7 @@
 #include "config.h"
 
 bool
-check_config_exists(const char * name)
+check_file_reads(const char * name)
 {
     return access(name, R_OK) != -1 ? true : false;
 }
@@ -21,7 +21,7 @@ get_config_name()
     };
     for(int i = 0; i < NUMBER_OF_PATHS; i++)
     {
-        if(check_config_exists(possible_path[i]))
+        if(check_file_reads(possible_path[i]))
         {
             strcpy(result, possible_path[i]);
             return result;

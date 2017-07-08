@@ -65,6 +65,6 @@ struct bn_config {
 };
 
 char *get_config_name();
-bool check_config_exists(const char *name);
+bool check_file_reads(const char *name);
 int load_config(char *name, config_t *cfg, struct bn_config *conf);
 void print_config(char *name);
