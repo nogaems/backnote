@@ -41,7 +41,7 @@ load_config(char *name, config_t *cfg, struct bn_config *conf)
     config_init(cfg);    
     if(!config_read_file(cfg, name))
     {
-        fprintf(stderr, "Can't read configuration file \"%s\"\n", name);
+        fprintf(stderr, "Syntax error in the configuration file \"%s\"\n", name);
         return -1;
     }
     
