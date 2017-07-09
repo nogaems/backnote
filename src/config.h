@@ -42,10 +42,11 @@ extern struct bn_config conf;
    o - object of validation
    e - explanation of a problem
 */
-#define FALSE_CHECK_WITH_MESSAGE(o, e)                              \
-    fprintf(stderr, "[config validation error] %s: %s\n", o, e);    \
-    result = false
-
+#define FALSE_CHECK_WITH_MESSAGE(o, e)                                  \
+    {                                                                   \
+        fprintf(stderr, "[config validation error] %s: %s\n", o, e);    \
+        result = false;                                                 \
+    }
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
