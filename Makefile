@@ -5,10 +5,10 @@ CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -std=c11 -pedantic -Wall
 ODIR=./src
 LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig
 
-_DEPS = config.h
+_DEPS = config.h render.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = config.o backnote.o
+_OBJ = config.o render.o backnote.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

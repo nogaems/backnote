@@ -74,6 +74,7 @@ struct bn_note {
     const char *file;
     struct bn_note_position position;
     struct bn_note_style style;
+    char *text;
 };
 
 /* Processed config */
