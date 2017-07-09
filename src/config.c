@@ -159,7 +159,7 @@ validate_config(struct bn_config *conf)
         FcResult r;
         /* 
            Configure the search pattern, 
-           assume "name" is desired font name 
+           assume "note.style.font" is desired font name 
         */
         FcPattern* pat = FcNameParse((const FcChar8*)(note.style.font));
         FcConfigSubstitute(config, pat, FcMatchPattern);
