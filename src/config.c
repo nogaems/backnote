@@ -147,9 +147,9 @@ validate_config(struct bn_config *conf)
             FALSE_CHECK_WITH_MESSAGE(note.file, "Unable to read the file");
         
         if(note.position.x1 > wpx)
-            FALSE_CHECK_WITH_MESSAGE("x1", "This value should be lesser than you display width");
+            FALSE_CHECK_WITH_MESSAGE("x1", "This value should be lesser than your display width");
         if(note.position.y1 > hpx)
-            FALSE_CHECK_WITH_MESSAGE("y1", "This value should be lesser than you display height");
+            FALSE_CHECK_WITH_MESSAGE("y1", "This value should be lesser than your display height");
         if(note.position.x2 < note.position.x1 && note.position.x2 != 0)
             FALSE_CHECK_WITH_MESSAGE("x2", "This value should be bigger that x1");
         if(note.position.y2 < note.position.y1 && note.position.y2 != 0)
