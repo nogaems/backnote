@@ -1,9 +1,10 @@
 IDIR=./src
 CC=gcc
 FREETYPEDIR=/usr/include/freetype2/
-CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -std=c11 -pedantic -Wall
+CAIRODIR=/usr/include/cairo/
+CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -I$(CAIRODIR) -std=c11 -pedantic -Wall
 ODIR=./src
-LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig
+LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig -lcairo
 
 _DEPS = config.h render.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
