@@ -1,6 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include <libconfig.h>
+#include <cairo.h>
 
 #define MAX_NOTES 8
 #define NUMBER_OF_PATHS 3
@@ -74,7 +75,18 @@ struct bn_note {
     const char *file;
     struct bn_note_position position;
     struct bn_note_style style;
+    int w;
+    int h;
     char *text;
+    /*
+      lbi - line break indexes
+      the text should fit within specified width, so there is
+      an array of indexes that used in splitting that text 
+      using the space character as a delimiter
+    */
+    int *lbi;
+    int lbi_counter;
+    cairo_text_extents_t extents;
 };
 
 /* Processed config */
@@ -83,6 +95,8 @@ struct bn_config {
     int daemon;
     struct bn_note notes[MAX_NOTES];
     unsigned int notes_count;
+    cairo_surface_t *surface;
+    cairo_t *cr;
 };
 
 char *get_config_name();

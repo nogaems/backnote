@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <X11/Xlib.h>
 #include "render.h"
 
 void
@@ -15,3 +17,106 @@ load_note_text(struct bn_note *note)
     fclose(f);
     note->text[fsize] = 0;
 }
+
+bool
+init_render(struct bn_render *render)
+{
+    if (!(render->dpy = XOpenDisplay(NULL)))
+    {
+        fprintf(stderr, "Cannot open display\n");
+        return false;
+    }
+    render->screen = DefaultScreen(render->dpy);
+    render->width = XDisplayWidth(render->dpy, render->screen);
+    render->height = XDisplayHeight(render->dpy, render->screen);
+
+    render->surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
+                                                 render->width, render->height);
+    render->cr = cairo_create(render->surface);
+    return true;
+}
+
+void
+clean_render(struct bn_render *render)
+{
+    cairo_destroy (render->cr);
+    cairo_surface_destroy (render->surface);
+}
+
+bool check_fit(struct bn_render *render, struct bn_note *note, char *text)
+{
+    cairo_text_extents_t extents;
+
+    cairo_select_font_face(render->cr, note->style.font, 0,0);
+    cairo_set_font_size(render->cr, note->style.size);
+    cairo_text_extents(render->cr, text, &extents);
+    printf("check: %s\net: w %f, h %f\n", text, extents.width, extents.height);
+    if(note->w >= (extents.width - note->style.border_thickness * 2 ) &&
+       note->h >= (extents.height - note->style.border_thickness * 2))
+        return true;
+    return false;
+}
+
+void prepare_note(struct bn_render *render, struct bn_note *note)
+{
+    if(note->position.x2 != 0)
+    {
+        note->w = note->position.x2 - note->position.x1;
+    } else {
+        note->w = render->width - note->position.x1;
+    }
+    if(note->position.y2 != 0)
+    {
+        note->h = note->position.y2 - note->position.y1;
+    } else {
+        note->h = render->height - note->position.y1;
+    }
+
+    cairo_font_extents_t fe;
+    cairo_select_font_face(render->cr, note->style.font, 0,0);
+    cairo_set_font_size(render->cr, note->style.size);
+    cairo_font_extents(render->cr, &fe);
+    int max_lbi_counter = note->h / fe.height + 1;
+
+    note->lbi = malloc(sizeof(int)*max_lbi_counter);
+    note->lbi_counter = 0;
+
+    char *buf;
+    int max_buf_len = (int)(note->w / fe.max_x_advance + 1);
+    buf = malloc(sizeof(char) * max_buf_len);
+    memset(buf, '\0', 1);
+
+    int text_len = strlen(note->text);
+    int space = 0;
+
+    for (int i = 0; i < text_len; i++)
+    {
+        if(IS_THIS("\n"))
+        {
+            note->lbi[note->lbi_counter] = i;
+            note->lbi_counter++;
+            memset(buf, '\0', 1);
+            continue;
+        }
+        strncat(buf, note->text + (sizeof(char) * i), 1);
+        if(IS_THIS(" ") && i > space)
+        {
+            space = i;
+        }
+        if(check_fit(render, note, buf))
+        {
+            continue;
+        } else {
+            if(space == 0 || space == note->lbi[note->lbi_counter-1])
+            {
+                fprintf(stderr, "Fatal error: word \"%s\" is wider than note area width!\n", buf);
+                exit(1);
+            }
+            note->lbi[note->lbi_counter] = space;
+            note->lbi_counter++;
+            memset(buf, '\0', 1);
+            i = space;
+        }
+    }
+}
+
