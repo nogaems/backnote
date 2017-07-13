@@ -213,7 +213,7 @@ print_prepared_text(struct bn_note *note)
                 note->lbi[i]-lbi_prev - offset);
         buf[note->lbi[i]-lbi_prev] = '\0';
         lbi_prev = note->lbi[i];
-        printf("line %i: \"%s\"\n", i, buf);
+        printf("line %i (lbi:%i): \"%s\"\n", i, note->lbi[i], buf);
     }
     free(buf);
 }
