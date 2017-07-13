@@ -84,7 +84,7 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
     char *buf;
     int max_buf_len = (int)(note->w / fe.max_x_advance + 1);
     buf = malloc(sizeof(char) * max_buf_len);
-    memset(buf, '\0', 1);
+    memset(buf, '\0', max_buf_len);
 
     int text_len = strlen(note->text);
     int space = 0;
@@ -95,7 +95,7 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
         {
             note->lbi[note->lbi_counter] = i;
             note->lbi_counter++;
-            memset(buf, 0, strlen(buf));
+            memset(buf, 0, max_buf_len);
             continue;
         }
         strncat(buf, note->text + (sizeof(char) * i), 1);
@@ -115,8 +115,7 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
             }
             note->lbi[note->lbi_counter] = space;
             note->lbi_counter++;
-            memset(buf, 0, strlen(buf));
-            i = space;
+            memset(buf, 0, max_buf_len);
         }
     }
 }
@@ -130,7 +129,7 @@ print_prepared_text(struct bn_note *note)
     buf = malloc(1024*sizeof(char));
     for(int i; i < note->lbi_counter; i++)
     {
-        buf = memset(buf, 0, strlen(buf));
+        buf = memset(buf, 0, 1024);
         offset = lbi_prev ? 1 : 0;
         strncpy(buf,
                 note->text + (lbi_prev*sizeof(char)) + offset,

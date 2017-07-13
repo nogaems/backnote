@@ -15,8 +15,8 @@ check_file_reads(const char * name)
 char *
 get_config_name()
 {
-    char *result = malloc(sizeof(char *));
-    memset(result, 0, 0);
+    char *result = malloc(sizeof(char) * MAX_LENGTH_OF_PATH);
+    memset(result, 0, sizeof(char) * MAX_LENGTH_OF_PATH);
     char possible_path[NUMBER_OF_PATHS][MAX_LENGTH_OF_PATH] =
     {
         "./backnote.cfg", "~/.backnote.cfg", "/etc/backnote.cf"
