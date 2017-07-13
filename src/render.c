@@ -121,3 +121,24 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
     }
 }
 
+void
+print_prepared_text(struct bn_note *note)
+{
+    char *buf;
+    int offset;
+    int lbi_prev = 0;
+    buf = malloc(1024*sizeof(char));
+    for(int i; i < note->lbi_counter; i++)
+    {
+        buf = memset(buf, 0, strlen(buf));
+        offset = lbi_prev ? 1 : 0;
+        strncpy(buf,
+                note->text + (lbi_prev*sizeof(char)) + offset,
+                note->lbi[i]-lbi_prev - offset);
+        buf[note->lbi[i]-lbi_prev] = '\0';
+        lbi_prev = note->lbi[i];
+        printf("line %i: \"%s\"\n", i, buf);
+    }
+    free(buf);
+}
+

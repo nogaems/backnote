@@ -21,3 +21,4 @@ bool init_render(struct bn_render *render);
 void clean_render(struct bn_render *render);
 void prepare_note(struct bn_render *render, struct bn_note *note);
 bool check_fit(struct bn_render *render, struct bn_note *note, char *text);
+void print_prepared_text(struct bn_note *note);
