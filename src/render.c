@@ -51,8 +51,8 @@ bool check_fit(struct bn_render *render, struct bn_note *note, char *text)
     cairo_set_font_size(render->cr, note->style.size);
     cairo_text_extents(render->cr, text, &extents);
 
-    if(note->w >= (extents.width - note->style.border_thickness * 2 ) &&
-       note->h >= (extents.height - note->style.border_thickness * 2))
+    if(note->w >= (extents.width + note->style.border_thickness * 2 ) &&
+       note->h >= (extents.height + note->style.border_thickness * 2))
         return true;
     return false;
 }
