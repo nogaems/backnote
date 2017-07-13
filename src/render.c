@@ -130,7 +130,7 @@ print_prepared_text(struct bn_note *note)
     int offset;
     int lbi_prev = 0;
     buf = malloc(1024*sizeof(char));
-    for(int i; i < note->lbi_counter; i++)
+    for(int i = 0; i < note->lbi_counter; i++)
     {
         buf = memset(buf, 0, 1024);
         offset = lbi_prev ? 1 : 0;
