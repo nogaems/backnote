@@ -124,6 +124,80 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
 }
 
 void
+render_wallpaper(struct bn_render *render, struct bn_config *conf)
+{
+    cairo_surface_t *wallpaper =
+        cairo_image_surface_create_from_png(conf->wallpaper);
+
+    cairo_set_source_rgba(render->cr, 0,0,0, 1);
+    cairo_paint(render->cr);
+
+    cairo_set_source_surface(render->cr, wallpaper, 0, 0);
+    cairo_paint(render->cr);
+
+    cairo_surface_flush(render->surface);
+}
+
+void
+render_note(struct bn_render *render, struct bn_note *note)
+{
+    cairo_font_extents_t fe;
+
+    cairo_select_font_face(render->cr, note->style.font, 0,0);
+    cairo_set_font_size(render->cr, note->style.size);
+    cairo_font_extents(render->cr, &fe);
+
+    /* Backgroung */
+    /* TODO: add a level of transparency in the config */
+    double bg_alpha = (note->style.bg_color + 1) ? 1.0 : 0.0;
+    double bg_color = bg_alpha ? (double)note->style.bg_color / 255 : 0;
+    cairo_set_source_rgba(render->cr, GRAYSCALE(bg_color), bg_alpha);
+    cairo_rectangle(render->cr,
+                    (double)note->position.x1,
+                    (double)note->position.y1,
+                    (double)note->w,
+                    (double)note->h);
+    cairo_fill(render->cr);
+
+    /* Border */
+    double border;
+    border = note->style.border ? (double)note->style.border_thickness : 0;
+    cairo_set_line_width(render->cr, border);
+    cairo_set_source_rgb(render->cr, GRAYSCALE((double)note->style.border_color/255));
+    cairo_rectangle(render->cr,
+                    (double)note->position.x1,
+                    (double)note->position.y1,
+                    (double)note->w,
+                    (double)note->h);
+    cairo_stroke(render->cr);
+
+    /* Text */
+    cairo_set_source_rgb(render->cr, GRAYSCALE((double)note->style.color/255));
+
+    double x, y;
+    x = (double)note->position.x1 + border;
+    y = (double)note->position.y1 + border;
+    int max_buf_len = sizeof(char) * (int)(note->w/fe.max_x_advance) + 2;
+    char *buf = malloc(max_buf_len);
+    int offset;
+    int lbi_prev = 0;
+
+    for(int i = 0; i < note->lbi_counter; i++)
+    {
+        y += fe.height;
+        cairo_move_to(render->cr, x, y);
+        memset(buf, '\0', max_buf_len);
+        strncpy(buf,
+                note->text + sizeof(char)*lbi_prev,
+                note->lbi[i] - lbi_prev);
+        buf[note->lbi[i]-lbi_prev] = '\0';
+        offset = (!strncmp(buf, " ", 1) || !strncmp(buf, "\n", 1)) ? 1 : 0;
+        lbi_prev = note->lbi[i];
+        cairo_show_text(render->cr, buf+offset);
+    }
+}
+
+void
 print_prepared_text(struct bn_note *note)
 {
     char *buf;
