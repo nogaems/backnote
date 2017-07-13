@@ -95,6 +95,7 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
         {
             note->lbi[note->lbi_counter] = i;
             note->lbi_counter++;
+            space = i;
             memset(buf, 0, max_buf_len);
             continue;
         }
@@ -106,14 +107,16 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
         if(check_fit(render, note, buf))
         {
             continue;
-        } else {
+        } else {            
             if(space == 0 || space == note->lbi[note->lbi_counter-1])
             {
                 /* TODO: Crop this word to the maximum width thus it would fit in the note width */
                 fprintf(stderr, "Warning: word \"%s\" is wider than note area width!\n", buf);
-                continue;
+                note->lbi[note->lbi_counter] = i;
+            } else {
+                note->lbi[note->lbi_counter] = space;
+                i = space;
             }
-            note->lbi[note->lbi_counter] = space;
             note->lbi_counter++;
             memset(buf, 0, max_buf_len);
         }
