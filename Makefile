@@ -1,8 +1,7 @@
 IDIR=./src
 CC=gcc
 FREETYPEDIR=/usr/include/freetype2/
-CAIRODIR=/usr/include/cairo/
-CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -I$(CAIRODIR) -std=c11 -pedantic -Wall
+CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -std=c11 -pedantic -Wall
 ODIR=./src
 LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig -lcairo
 

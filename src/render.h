@@ -1,6 +1,6 @@
 #pragma once
 #include <stdbool.h>
-#include <cairo.h>
+#include <cairo/cairo.h>
 #include <X11/Xlib.h>
 #include "config.h"
 

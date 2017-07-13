@@ -1,7 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include <libconfig.h>
-#include <cairo.h>
+#include <cairo/cairo.h>
 
 #define MAX_NOTES 8
 #define NUMBER_OF_PATHS 3
