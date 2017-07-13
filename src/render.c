@@ -50,7 +50,7 @@ bool check_fit(struct bn_render *render, struct bn_note *note, char *text)
     cairo_select_font_face(render->cr, note->style.font, 0,0);
     cairo_set_font_size(render->cr, note->style.size);
     cairo_text_extents(render->cr, text, &extents);
-    printf("check: %s\net: w %f, h %f\n", text, extents.width, extents.height);
+
     if(note->w >= (extents.width - note->style.border_thickness * 2 ) &&
        note->h >= (extents.height - note->style.border_thickness * 2))
         return true;
@@ -95,7 +95,7 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
         {
             note->lbi[note->lbi_counter] = i;
             note->lbi_counter++;
-            memset(buf, '\0', 1);
+            memset(buf, 0, strlen(buf));
             continue;
         }
         strncat(buf, note->text + (sizeof(char) * i), 1);
@@ -111,10 +111,11 @@ void prepare_note(struct bn_render *render, struct bn_note *note)
             {
                 /* TODO: Crop this word to the maximum width thus it would fit in the note width */
                 fprintf(stderr, "Warning: word \"%s\" is wider than note area width!\n", buf);
+                continue;
             }
             note->lbi[note->lbi_counter] = space;
             note->lbi_counter++;
-            memset(buf, '\0', 1);
+            memset(buf, 0, strlen(buf));
             i = space;
         }
     }
