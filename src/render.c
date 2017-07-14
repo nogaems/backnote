@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
+#include <Imlib2.h>
 #include "render.h"
 
 void
@@ -218,3 +219,41 @@ print_prepared_text(struct bn_note *note)
     free(buf);
 }
 
+void
+update_root_bg(struct bn_render *render)
+{
+    /* Dump resulting wallpaper */
+    cairo_surface_write_to_png(render->surface, DUMP);
+
+    Imlib_Image img;
+    Pixmap pix;
+    Window root;
+    Screen *scn;
+    int width, height;
+
+    img = imlib_load_image(DUMP);
+    imlib_context_set_image(img);
+    width = imlib_image_get_width();
+    height = imlib_image_get_height();
+
+    scn = DefaultScreenOfDisplay(render->dpy);
+    root = DefaultRootWindow(render->dpy);
+    pix = XCreatePixmap(render->dpy, root, width, height,
+        DefaultDepthOfScreen(scn));
+
+    imlib_context_set_display(render->dpy);
+    imlib_context_set_visual(DefaultVisualOfScreen(scn));
+    imlib_context_set_colormap(DefaultColormapOfScreen(scn));
+    imlib_context_set_drawable(pix);
+
+    imlib_render_image_on_drawable(0, 0);
+    XSetWindowBackgroundPixmap(render->dpy, root, pix);
+    XClearWindow(render->dpy, root);
+
+    while (XPending(render->dpy)) {
+        XEvent ev;
+        XNextEvent(render->dpy, &ev);
+    }
+    XFreePixmap(render->dpy, pix);
+    imlib_free_image();
+}

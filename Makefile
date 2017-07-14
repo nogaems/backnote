@@ -3,7 +3,7 @@ CC=gcc
 FREETYPEDIR=/usr/include/freetype2/
 CFLAGS=-I$(IDIR) -I$(FREETYPEDIR) -std=c11 -pedantic -Wall
 ODIR=./src
-LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig -lcairo
+LIBS=-lconfig -lX11 -lXft -lfreetype -lfontconfig -lcairo -lImlib2
 
 _DEPS = config.h render.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))

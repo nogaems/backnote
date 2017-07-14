@@ -32,11 +32,14 @@ init()
     }
     if(!init_render(&render))
         return false;
+    render_wallpaper(&render, &conf);
     for(int i = 0; i < conf.notes_count; i++)
     {
         load_note_text(&conf.notes[i]);
         prepare_note(&render, &conf.notes[i]);
+        render_note(&render, &conf.notes[i]);
     }
+    update_root_bg(&render);
     return true;
 }
 
