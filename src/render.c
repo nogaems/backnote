@@ -52,8 +52,8 @@ bool check_fit(struct bn_render *render, struct bn_note *note, char *text)
     cairo_set_font_size(render->cr, note->style.size);
     cairo_text_extents(render->cr, text, &extents);
 
-    if(note->w >= (extents.width + note->style.border_thickness * 2 ) &&
-       note->h >= (extents.height + note->style.border_thickness * 2))
+    if(note->w >= (extents.width + note->style.border_thickness * 2 + 3) &&
+       note->h >= (extents.height + note->style.border_thickness * 2 + 3))
         return true;
     return false;
 }
@@ -176,8 +176,8 @@ render_note(struct bn_render *render, struct bn_note *note)
     cairo_set_source_rgb(render->cr, GRAYSCALE((double)note->style.color/255));
 
     double x, y;
-    x = (double)note->position.x1 + border;
-    y = (double)note->position.y1 + border;
+    x = (double)note->position.x1 + border + 3;
+    y = (double)note->position.y1 + border + 3;
     int max_buf_len = sizeof(char) * (int)(note->w/fe.max_x_advance) + 2;
     char *buf = malloc(max_buf_len);
     int offset;
@@ -196,6 +196,7 @@ render_note(struct bn_render *render, struct bn_note *note)
         lbi_prev = note->lbi[i];
         cairo_show_text(render->cr, buf+offset);
     }
+    cairo_surface_flush(render->surface);
 }
 
 void

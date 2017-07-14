@@ -47,7 +47,7 @@ void
 clean_up()
 {
     free(config_name);
-    for(int i = i; i < conf.notes_count; i++)
+    for(int i = 0; i < conf.notes_count; i++)
     {
         free(conf.notes[i].text);
     }
